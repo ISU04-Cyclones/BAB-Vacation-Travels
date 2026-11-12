@@ -234,7 +234,7 @@ table.words i{display:block;font-size:13px;color:var(--mute)}
 
 <script>
 "use strict";
-const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "7c0866bd04"};
+const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "73d0e39e0e"};
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const ic = n => `<svg class="i" aria-hidden="true"><use href="#${n}"/></svg>`;
@@ -332,7 +332,8 @@ function todoCard() {
 function vToday() {
   const n = nowMs(), i = todayIdx(n), days = D.days;
   if (i < 0) {
-    const d = days[0], left = Math.ceil((itemMs(d, d.items[0]) - n) / (24 * H));
+    const d = days[0], hd = new Date(n + d.off * H),
+      left = Math.round((Date.UTC(D.trip.year, D.trip.month - 1, d.d) - Date.UTC(hd.getUTCFullYear(), hd.getUTCMonth(), hd.getUTCDate())) / (24 * H));
     document.documentElement.style.setProperty('--legc', legColor('ams'));
     return `<div class="hero" style="background:linear-gradient(160deg,#1F6F8B 0%,#A86400 45%,#B8375F 75%,#3A3F9E 100%)"><div class="daycount">${esc(D.trip.sub)}</div><div class="count" style="margin-top:14px">${left}</div><div class="place" style="font-size:28px">day${left === 1 ? '' : 's'} until takeoff</div><div class="theme">${esc(D.trip.takeoff)}</div></div>
     <h2 class="h2">Before you go</h2>${todoCard()}
