@@ -37,9 +37,12 @@ svg.i{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-
 /* tab bar */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 6px calc(var(--sab) + 4px);display:flex;justify-content:center}
 nav.tabs div{display:flex;width:100%;max-width:560px}
-nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px;font-weight:600;color:var(--mute);border-radius:10px}
-nav.tabs button svg{width:24px;height:24px}
-nav.tabs button[aria-current=page]{color:var(--leg)}
+nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 0 4px;font-size:11px;font-weight:600;color:#8B95A6;border-radius:10px}
+nav.tabs button svg{width:23px;height:23px;box-sizing:content-box;padding:4px 15px;border-radius:999px;transition:background-color .15s}
+nav.tabs button[aria-current=page]{color:var(--leg);font-weight:700}
+nav.tabs button[aria-current=page] svg{background:color-mix(in srgb,var(--leg) 15%,transparent)}
+@media (prefers-color-scheme:dark){nav.tabs button{color:#7E8A9E}
+ nav.tabs button[aria-current=page] svg{background:color-mix(in srgb,var(--leg) 22%,transparent)}}
 
 /* shared */
 .title{font:800 34px/1.02 var(--disp);letter-spacing:-.02em}
@@ -133,6 +136,9 @@ nav.tabs button[aria-current=page]{color:var(--leg)}
 /* places */
 .seg{display:flex;gap:6px;overflow-x:auto;margin:14px -16px 0;padding:0 16px 4px;scrollbar-width:none}
 .seg::-webkit-scrollbar{display:none}
+.seg.fr{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 46px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 46px),transparent)}
+.seg.fl{-webkit-mask-image:linear-gradient(to right,transparent,#000 46px);mask-image:linear-gradient(to right,transparent,#000 46px)}
+.seg.fl.fr{-webkit-mask-image:linear-gradient(to right,transparent,#000 46px,#000 calc(100% - 46px),transparent);mask-image:linear-gradient(to right,transparent,#000 46px,#000 calc(100% - 46px),transparent)}
 .seg button{padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-weight:650;white-space:nowrap;min-height:40px}
 .seg button[aria-pressed=true]{background:var(--leg);border-color:var(--leg);color:#fff}
 @media (prefers-color-scheme:dark){.seg button[aria-pressed=true]{color:#0F141D}}
@@ -228,7 +234,7 @@ table.words i{display:block;font-size:13px;color:var(--mute)}
 
 <script>
 "use strict";
-const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "14e7b9a2a8"};
+const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "7c0866bd04"};
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const ic = n => `<svg class="i" aria-hidden="true"><use href="#${n}"/></svg>`;
@@ -318,6 +324,7 @@ function sunArc(d, n) {
   <div class="sunrow"><div><b>${hm(d.sun.rise)}</b>Sunrise${d.sun.riseAt !== d.sun.setAt ? ', ' + esc(d.sun.riseAt) : ''}</div><div class="mid">${mid}</div><div><b>${hm(d.sun.set)}</b>Sunset${d.sun.riseAt !== d.sun.setAt ? ', ' + esc(d.sun.setAt) : ''}</div></div>`;
 }
 function todoCard() {
+  if (!D.todo.length) return `<div class="card"><div class="row"><div class="grow"><b>Nothing left to sort out</b><p class="small mute" style="margin-top:3px">Every booking is confirmed. Tickets are in the app, and the match is in your Apple Wallet.</p></div></div></div>`;
   return `<div class="card"><ul class="plain">${D.todo.map(t => `<li><button class="spot" data-go="${t.booking}"><span><b>${esc(t.title)}</b><span class="small mute" style="display:block">${esc(t.note)}</span></span>${ic('i-chev')}</button></li>`).join('')}</ul></div>`;
 }
 
@@ -327,7 +334,7 @@ function vToday() {
   if (i < 0) {
     const d = days[0], left = Math.ceil((itemMs(d, d.items[0]) - n) / (24 * H));
     document.documentElement.style.setProperty('--legc', legColor('ams'));
-    return `<div class="hero" style="background:linear-gradient(160deg,#1F6F8B 0%,#C97A00 45%,#B8375F 75%,#3A3F9E 100%)"><div class="daycount">${esc(D.trip.sub)}</div><div class="count" style="margin-top:14px">${left}</div><div class="place" style="font-size:28px">day${left === 1 ? '' : 's'} until takeoff</div><div class="theme">${esc(D.trip.takeoff)}</div></div>
+    return `<div class="hero" style="background:linear-gradient(160deg,#1F6F8B 0%,#A86400 45%,#B8375F 75%,#3A3F9E 100%)"><div class="daycount">${esc(D.trip.sub)}</div><div class="count" style="margin-top:14px">${left}</div><div class="place" style="font-size:28px">day${left === 1 ? '' : 's'} until takeoff</div><div class="theme">${esc(D.trip.takeoff)}</div></div>
     <h2 class="h2">Before you go</h2>${todoCard()}
     <h2 class="h2">First up: ${esc(d.theme.toLowerCase())}</h2><div class="card" style="--legc:${legColor(d.leg)};padding-left:6px">${timeline(d, null)}</div>`;
   }
@@ -401,7 +408,12 @@ function render(keepScroll) {
   if (tab !== 'places' && tab !== 'today') { const i = todayIdx(nowMs()); document.documentElement.style.setProperty('--legc', legColor(i >= 0 && i < D.days.length ? D.days[i].leg : 'ams')); }
   $('#app').innerHTML = VIEWS[tab]();
   $('#tabs div').innerHTML = TABS.map(([id, l]) => `<button data-tab="${id}" ${id === tab ? 'aria-current="page"' : ''}><svg class="i" aria-hidden="true"><use href="#t-${id}"/></svg>${l}</button>`).join('');
+  const sg = $('.seg'); if (sg) segFade(sg);
   window.scrollTo(0, keepScroll ? y : 0);
+}
+function segFade(el) {
+  const f = () => { el.classList.toggle('fl', el.scrollLeft > 4); el.classList.toggle('fr', el.scrollLeft + el.clientWidth < el.scrollWidth - 4); };
+  el.addEventListener('scroll', f, {passive: true}); f();
 }
 function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 1600); }
 
