@@ -67,6 +67,8 @@ nav.tabs button[aria-current=page] svg{background:color-mix(in srgb,var(--leg) 1
 
 /* today */
 .hero{position:relative;border-radius:26px;padding:20px 18px 14px;color:#fff;background:var(--legc);overflow:hidden}
+.hero > .motif{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.hero > *:not(.motif){position:relative;z-index:1}
 .hero .daycount{font-size:14px;font-weight:600;opacity:.9;padding-right:104px}
 .hero .place{font:800 40px/1 var(--disp);letter-spacing:-.025em;margin-top:6px}
 .hero .theme{font-size:16px;margin-top:6px;opacity:.95}
@@ -87,10 +89,12 @@ nav.tabs button[aria-current=page] svg{background:color-mix(in srgb,var(--leg) 1
 .wxrow .lo{opacity:.72;font-size:14.5px;font-variant-numeric:tabular-nums;margin-left:5px}
 .wxrow .sub2{font-size:11.5px;opacity:.85;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wxnone{margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.22);font-size:13px;opacity:.85}
-.wxline{font-size:12.5px;color:var(--mute);margin-top:4px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
-.wxline svg.i{width:15px;height:15px;margin-right:1px}
+.wxline{font-size:12.5px;color:var(--mute);margin-top:4px;display:flex;align-items:center;column-gap:13px;row-gap:2px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.wxline .wxg{display:inline-flex;align-items:center;white-space:nowrap}
+.wxline svg.i{width:15px;height:15px;margin-right:2px}
 .wxline i{font-style:normal;opacity:.72;margin-left:3px}
-.wxline .sep{opacity:.45;margin:0 3px}
+.wxline .nm{margin-left:5px}
+.wxline .sep{opacity:.45;margin-right:5px}
 .next .when{font:700 15px/1 var(--body);color:var(--leg)}
 .next h3{font:700 22px/1.15 var(--disp);margin-top:6px}
 .next p{margin-top:6px;color:var(--mute)}
@@ -255,7 +259,7 @@ table.words i{display:block;font-size:13px;color:var(--mute)}
 
 <script>
 "use strict";
-const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "07ca093c89"};
+const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "e3ce3cf32b"};
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const ic = n => `<svg class="i" aria-hidden="true"><use href="#${n}"/></svg>`;
@@ -306,6 +310,82 @@ function rel(ms) { const m = Math.round(ms / 60000); if (m < 1) return 'now'; if
 const legColor = leg => D.legs[leg].color;
 const mapUrl = q => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
 const dirUrl = q => 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(q);
+
+/* ---------- day motifs ---------- */
+const stars = pts => pts.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity="${(0.35 + r * 0.3).toFixed(2)}"/>`).join('');
+const HEROBG = {
+ 19: 'linear-gradient(165deg,#215F47 0%,#174A62 55%,#0F2B46 100%)',
+ 20: 'linear-gradient(165deg,#1E7391 0%,#17536D 58%,#0E3449 100%)',
+ 21: 'linear-gradient(150deg,#1F6F8B 0%,#4E6377 42%,#8A5A24 72%,#A86400 100%)',
+ 22: 'linear-gradient(165deg,#C07A14 0%,#8E4E16 55%,#56301A 100%)',
+ 23: 'linear-gradient(170deg,#A86400 0%,#6B3A1E 45%,#2A1E3A 100%)',
+ 24: 'linear-gradient(165deg,#B8375F 0%,#86375A 55%,#452A4C 100%)',
+ 25: 'linear-gradient(165deg,#BE3A62 0%,#8C2A54 58%,#5A1E3E 100%)',
+ 26: 'linear-gradient(165deg,#C2495A 0%,#97324F 55%,#67233E 100%)',
+ 27: 'linear-gradient(160deg,#E08A52 0%,#A3628A 45%,#4A47A2 78%,#343A96 100%)',
+ 28: 'linear-gradient(170deg,#3F44A6 0%,#2A2E7A 50%,#15184A 100%)',
+ 29: 'linear-gradient(165deg,#3A3F9E 0%,#2E2F74 55%,#1A1B46 100%)',
+ 30: 'linear-gradient(165deg,#B8603A 0%,#4F5A80 52%,#1C3850 100%)',
+};
+const MOTIF = {
+ // every motif is a horizon scene in the lower third: the sun arc is the sky, this is the ground
+ 19: () => stars([[26,250,1.2],[66,214,1],[338,236,1.1],[372,206,1],[160,196,0.9],[250,224,1]]) +
+   `<path d="M-20 362 Q150 288 430 318" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round"/>
+    <g opacity=".5" fill="#fff"><path d="M404 308l-24 12 2-9-14-2 6-6 30 5z"/></g>
+    <g opacity=".2" fill="#fff"><path d="M0 400h400v-26H0z"/></g>
+    <g opacity=".45" fill="#fff"><path d="M16 374v-8h5v8zm26 0v-12h4v12zm30 0v-6h6v6zm34 0v-14h4v14zm40 0v-7h5v7zm36 0v-11h4v11zm44 0v-6h5v6zm38 0v-13h4v13zm40 0v-9h5v9zm36 0v-5h5v5z"/></g>`,
+ // gabled canal houses and their reflection
+ 20: () => `<g opacity=".17" fill="#fff"><path d="M0 400v-76l13-13 13 13v76zM32 400v-62l12-11 12 11v62zM62 400v-86l14-13 14 13v86zM96 400v-58l11-10 11 10v58zM124 400v-72l13-12 13 12v72zM156 400v-64l12-11 12 11v64zM188 400v-80l13-12 13 12v80zM220 400v-56l11-10 11 10v56zM248 400v-70l13-12 13 12v70zM280 400v-60l12-11 12 11v60zM310 400v-84l14-13 14 13v84zM344 400v-56l11-10 11 10v56zM372 400v-74l13-12 13 12v74z"/></g>
+   <g opacity=".13" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"><path d="M0 392q26-8 52 0t52 0 52 0 52 0 52 0 52 0 52 0"/></g>`,
+ // gables give way to palms and sand
+ 21: () => `<g opacity=".16" fill="#fff"><path d="M0 400v-74l12-12 12 12v74zM30 400v-58l11-10 11 10v58zM58 400v-82l13-12 13 12v82zM90 400v-54l11-10 11 10v54z"/></g>
+   <g opacity=".16" fill="#fff"><path d="M246 400q48-42 154-50v50z"/><path d="M320 400v-56h5v56z"/>
+    <path d="M322 346c-12-10-26-10-33-3 11-3 21 1 28 8zM322 346c12-10 26-10 33-3-11-3-21 1-28 8zM322 346c-6-13-2-25 6-29-4 9-2 20 0 27zM322 346c8-11 20-14 28-9-9 1-19 6-24 13z"/></g>
+   <path d="M-10 336 Q190 278 410 320" fill="none" stroke="#fff" stroke-opacity=".26" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round"/>
+   <g opacity=".45" fill="#fff"><path d="M392 312l-23 12 2-9-14-2 6-6 29 5z"/></g>`,
+ // a caravan along the dune ridge
+ 22: () => `<g opacity=".19" fill="#fff"><path d="M0 400q112-72 212-36t188-10v46z"/></g>
+   <g opacity=".12" fill="#fff"><path d="M0 400q132-46 252-10t148 10z"/></g>
+   <g opacity=".5" fill="#fff"><path d="M236 344c2-7 6-7 8-2 3-6 8-6 10 1l2 11-3 1-2-6-2 7h-3l-1-7-2 7h-3zM262 341c2-6 6-6 8-1 3-6 8-5 10 1l2 10-3 1-2-5-2 6h-3l-1-6-2 6h-3zM288 339c2-6 5-6 7-1 3-5 7-5 9 1l2 9-3 1-1-5-2 5h-3l-1-5-2 5h-3z"/></g>`,
+ // a tent and a fire out on the sand
+ 23: () => stars([[30,206,1.3],[78,182,1],[134,214,1.1],[196,186,0.9],[262,210,1.2],[322,184,1],[368,216,1.1]]) +
+   `<g opacity=".19" fill="#fff"><path d="M0 400q122-58 208-26t192-12v38z"/></g>
+    <g opacity=".4" fill="#fff"><path d="M278 376l22-40 22 40z"/></g>
+    <g opacity=".28" stroke="#fff" stroke-width="1.6" fill="none"><path d="M264 376h72"/></g>
+    <g opacity=".5" fill="#FFD2A0"><path d="M246 374c-7-7-3-15 2-19-1 7 4 8 5 4 3 6 5 8 5 13 0 6-12 7-12 2z"/></g>
+    <g opacity=".3" stroke="#FFD2A0" stroke-width="1.6" stroke-linecap="round"><path d="M240 379l-6 4M258 379l6 4"/></g>`,
+ // switchbacks over the High Atlas
+ 24: () => `<g opacity=".15" fill="#fff"><path d="M0 400l100-112 58 66 46-54 74 82 122-60v78z"/></g>
+   <g opacity=".1" fill="#fff"><path d="M0 400l132-86 90 58 178-44v72z"/></g>
+   <path d="M18 400q66-42 126-34t106-46 140-30" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round" stroke-dasharray="11 9"/>`,
+ // lanterns strung over the arcade
+ 25: () => `<g opacity=".26" stroke="#fff" stroke-width="1.3" fill="none"><path d="M-6 300q104 24 202 2t210 16"/></g>
+   ${[[40,316],[104,326],[170,318],[236,330],[300,320],[360,332]].map(([x,y],i)=>`<g opacity="${(0.24+(i%3)*0.09).toFixed(2)}" fill="#fff"><rect x="${x-1}" y="${y}" width="2" height="8"/><path d="M${x-8} ${y+8}h16l-3.5 16h-9z"/><path d="M${x-4} ${y+25}h8l-2.5 5h-3z"/></g>`).join('')}
+   <g opacity=".13" fill="#fff"><path d="M34 400v-32a30 30 0 0 1 60 0v32zM140 400v-24a26 26 0 0 1 52 0v24zM244 400v-36a32 32 0 0 1 64 0v36zM344 400v-26a28 28 0 0 1 56 0v26z"/></g>`,
+ // a tagine on the fire
+ 26: () => `<g opacity=".3" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"><path d="M176 318q10-12 0-24t0-20M206 310q10-12 0-24t0-18M236 318q10-12 0-24t0-20"/></g>
+   <g opacity=".2" fill="#fff"><path d="M206 350h6v-12h-6z"/><path d="M152 386h114a57 57 0 0 0-114 0z" opacity=".55"/><path d="M144 386h130v9a6 6 0 0 1-6 6H150a6 6 0 0 1-6-6z"/></g>
+   <g opacity=".2" fill="#fff"><circle cx="54" cy="378" r="24"/><circle cx="102" cy="390" r="18"/><circle cx="344" cy="382" r="22"/></g>`,
+ // balloons going up over the palm groves
+ 27: () => `${[[56,286,30],[332,252,22],[214,318,15]].map(([x,y,r],i)=>`<g opacity="${(0.3-i*0.07).toFixed(2)}" fill="#fff"><path d="M${x} ${y-r}a${r} ${r} 0 0 1 ${r} ${r}c0 ${(r*0.75).toFixed(1)} -${(r*0.55).toFixed(1)} ${(r*1.05).toFixed(1)} -${r} ${(r*1.5).toFixed(1)}c-${(r*0.45).toFixed(1)} -${(r*0.45).toFixed(1)} -${r} -${(r*0.75).toFixed(1)} -${r} -${(r*1.5).toFixed(1)}a${r} ${r} 0 0 1 ${r} -${r}z"/><path d="M${x-r*0.3} ${(y+r*1.62).toFixed(1)}h${(r*0.6).toFixed(1)}v${(r*0.42).toFixed(1)}h-${(r*0.6).toFixed(1)}z"/></g>`).join('')}
+   <g opacity=".14" fill="#fff"><path d="M0 400q122-28 222-8t178-6v14z"/></g>`,
+ // floodlights over the pitch
+ 28: () => `<g opacity=".13" fill="#fff"><path d="M40 236l66 164H-26zM360 236l66 164h-132z"/></g>
+   <g opacity=".2" fill="#fff"><path d="M0 400q200-70 400 0z"/></g>
+   <g opacity=".12" fill="#fff"><path d="M0 400q200-70 400 0v-4q-200-66-400 0z"/><path d="M0 382q200-66 400 0v-5q-200-62-400 0z"/></g>
+   <g opacity=".34" stroke="#fff" stroke-width="2.2" fill="none"><circle cx="200" cy="378" r="30"/><path d="M200 346v64"/><path d="M48 400q152-52 304 0"/><path d="M128 400v-18h144v18"/></g>`,
+ // market stalls under the lights
+ 29: () => `${[0,1].map(r=>`<path d="M-8 ${292+r*22}q102 ${22+r*4} 204 0t212 ${10+r*4}" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="1.3"/>`).join('')}
+   ${[[28,300],[78,310],[128,314],[178,312],[228,306],[278,310],[328,314],[374,308],[52,330],[150,338],[248,334],[346,336]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${(2.4+(i%3)*0.5).toFixed(1)}" fill="#FFE9B8" opacity="${(0.4+(i%4)*0.1).toFixed(2)}"/>`).join('')}
+   <g opacity=".15" fill="#fff"><path d="M0 400v-36h66v36zM74 400v-50h52v50zM134 400v-30h82v30zM224 400v-56h38v56zM270 400v-40h60v40zM338 400v-46h62v46z"/><path d="M224 344l19-15 19 15z"/></g>
+   <g opacity=".28" fill="#fff"><path d="M306 364l13-28 13 28zM310 350l9-19 9 19z"/></g>`,
+ // the long descent home
+ 30: () => `<g opacity=".15" fill="#fff"><path d="M0 400q142-20 252-6t148 6v10z"/></g>
+   <g opacity=".12" stroke="#fff" stroke-width="2" fill="none"><path d="M0 372h400M0 386h400"/></g>
+   <path d="M-10 262 Q170 304 400 374" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round"/>
+   <g opacity=".5" fill="#fff"><path d="M374 360l-19 19-1-9-14-4 8-5 26-1z"/></g>
+   <g opacity=".35" fill="#FFE9B8"><circle cx="40" cy="378" r="2.4"/><circle cx="92" cy="376" r="2.4"/><circle cx="144" cy="374" r="2.4"/><circle cx="196" cy="374" r="2.4"/><circle cx="248" cy="376" r="2.4"/></g>`,
+};
 
 /* ---------- weather ---------- */
 const WX_TTL = 3 * 3600e3;
@@ -374,10 +454,10 @@ function wxLine(d, out) {
   if (!WX) return '';
   const parts = d.wx.map(k => {
     const w = wxFor(d, k); if (!w) return '';
-    return `${ic('w-' + WXC(w.c)[0])}${temp(w.hi)}<i>${temp(w.lo)}</i>${d.wx.length > 1 ? ' ' + esc(D.wxPlaces[k].name) : ''}`;
+    return `<span class="wxg">${ic('w-' + WXC(w.c)[0])}${temp(w.hi)}<i>${temp(w.lo)}</i>${d.wx.length > 1 ? `<span class="nm">${esc(D.wxPlaces[k].name)}</span>` : ''}</span>`;
   }).filter(Boolean);
   if (!parts.length) return `<div class="wxline">Forecast not out yet</div>`;
-  return `<div class="wxline">${parts.join('<span class="sep">·</span>')}${out > 7 ? '<span class="sep">·</span>long-range' : ''}</div>`;
+  return `<div class="wxline">${parts.join('')}${out > 7 ? '<span class="wxg"><span class="sep">·</span>long-range</span>' : ''}</div>`;
 }
 function wxStamp() {
   if (!WX) return 'Weather loads the next time you are online. From Open-Meteo.';
@@ -448,7 +528,7 @@ function vToday() {
   if (!nxt && days[i + 1]) { nd = days[i + 1]; nxt = nd.items.find(x => x.t); }
   const cname = off === 1 ? (d.leg === 'ams' ? 'Amsterdam time' : 'Madrid time') : CLOCKNAME[off];
   const warns = d.items.filter(x => x.warn);
-  return `<div class="hero"><div class="clock"><b>${clockAt(n, off)}</b><span>${cname}</span>${wxNow(d)}</div>
+  return `<div class="hero"${HEROBG[d.d] ? ` style="background:${HEROBG[d.d]}"` : ''}>${MOTIF[d.d] ? `<svg class="motif" viewBox="0 0 400 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${MOTIF[d.d]()}</svg>` : ''}<div class="clock"><b>${clockAt(n, off)}</b><span>${cname}</span>${wxNow(d)}</div>
     <div class="daycount">${d.dow} ${d.d} Nov · Day ${i + 1} of ${days.length}${d.badge ? ' · ' + d.badge : ''}</div><div class="place">${esc(d.place)}</div><div class="theme">${esc(d.theme)}</div>${sunArc(d, n)}${wxHero(d)}</div>
   ${warns.map(w => `<div class="warn" style="margin-top:10px">${ic('i-alert')}<span>${esc(w.title)}: ${esc(w.note)}</span></div>`).join('')}
   ${nxt ? `<div class="card next" style="margin-top:10px"><div class="when">Next ${nd === d ? '· ' + hm(nxt.t) + ' · ' + rel(itemMs(nd, nxt) - n) : '· tomorrow ' + hm(nxt.t)}</div><h3>${esc(nxt.title)}</h3>${nxt.note ? `<p>${esc(nxt.note)}</p>` : ''}${itemChips(nxt)}</div>` : ''}
