@@ -259,7 +259,7 @@ table.words i{display:block;font-size:13px;color:var(--mute)}
 
 <script>
 "use strict";
-const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "e3ce3cf32b"};
+const CFG = {"salt": "2DO0Pzg6nkP3HhNXwTGsJA==", "iter": 600000, "v": "e6f1bf2906"};
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const ic = n => `<svg class="i" aria-hidden="true"><use href="#${n}"/></svg>`;
@@ -487,7 +487,7 @@ function timeline(d, n) {
 function stayCard(id, compact) {
   const s = D.stays[id]; if (!s) return '';
   return `<div class="card" style="--legc:${legColor(s.leg)}"><div class="row"><div class="legbar"></div><div class="grow"><h3 style="font:700 19px/1.2 var(--disp)">${esc(s.name)}</h3><p class="small mute">${esc(s.nights)}</p><p class="small" style="margin-top:4px">${esc(s.addr)}</p></div></div>
-  <div class="chips"><button class="chip pri" data-taxi="${id}">${ic('i-car')}Show driver</button><a class="chip" href="${dirUrl(s.map)}" target="_blank" rel="noopener">${ic('i-pin')}Directions</a>${s.phone ? `<a class="chip" href="tel:${s.phone}">${ic('i-phone')}${esc(s.phoneLabel || 'Call')}</a>` : ''}${s.email && !s.phone ? `<a class="chip" href="mailto:${s.email}">${ic('i-mail')}Email</a>` : ''}${s.ticket ? `<button class="chip" data-ticket="${s.ticket}">${ic('i-ticket')}QR</button>` : ''}</div>
+  <div class="chips"><button class="chip pri" data-taxi="${id}">${ic('i-car')}Show driver</button><a class="chip" href="${dirUrl(s.map)}" target="_blank" rel="noopener">${ic('i-pin')}Directions</a>${s.phone ? `<a class="chip" href="tel:${s.phone}">${ic('i-phone')}${esc(s.phoneLabel || 'Call')}</a>` : ''}${s.wa ? `<a class="chip" href="https://wa.me/${s.wa}" target="_blank" rel="noopener">${ic('i-phone')}WhatsApp</a>` : ''}${s.email ? `<a class="chip" href="mailto:${s.email}">${ic('i-mail')}Email</a>` : ''}${s.ticket ? `<button class="chip" data-ticket="${s.ticket}">${ic('i-ticket')}QR</button>` : ''}</div>
   ${compact ? '' : `<ul class="plain" style="margin-top:14px">${s.facts.map(f => `<li>${esc(f)}</li>`).join('')}<li class="row"><span class="mute grow">Reference</span><button class="ref" data-copy="${esc(s.ref)}">${esc(s.ref)} ${ic('i-copy')}</button></li>${s.site ? `<li><a class="spot" href="${s.site}" target="_blank" rel="noopener"><span>${esc(s.siteLabel || 'Website')}</span>${ic('i-link')}</a></li>` : ''}${s.guide ? `<li><a class="spot" href="${s.guide}" target="_blank" rel="noopener"><span>Riad welcome guide</span>${ic('i-link')}</a></li>` : ''}</ul>`}</div>`;
 }
 function sunArc(d, n) {
@@ -579,7 +579,7 @@ function vBookings() {
       return `<div class="bk" id="bk-${b.id}"><div class="row" style="align-items:flex-start"><div class="grow"><h4>${esc(b.name)}</h4><p class="small mute">${esc(b.when)}</p></div><span class="pill ${st[1]}">${st[0]}</span></div>
       ${b.detail ? `<p class="small" style="margin-top:6px${b.status === 'check' || b.status === 'missing' ? ';color:var(--warn)' : ''}">${esc(b.detail)}</p>` : ''}
       ${b.ref ? `<p class="small" style="margin-top:6px"><span class="mute">${esc(b.refLabel)}: </span><button class="ref" data-copy="${esc(b.ref)}">${esc(b.ref)} ${ic('i-copy')}</button></p>` : ''}
-      <div class="chips">${b.ticket ? `<button class="chip pri" data-ticket="${b.ticket}">${ic('i-ticket')}${b.ticket === 'cooking' ? 'Meeting point' : b.ticket === 'ambassade' ? 'QR' : 'Tickets'}</button>` : ''}${map ? `<a class="chip" href="${mapUrl(map)}" target="_blank" rel="noopener">${ic('i-pin')}Map</a>` : ''}${phone ? `<a class="chip" href="tel:${phone}">${ic('i-phone')}Call</a>` : ''}${b.email ? `<a class="chip" href="mailto:${b.email}">${ic('i-mail')}Email</a>` : ''}${b.stay ? `<button class="chip" data-taxi="${b.stay}">${ic('i-car')}Driver card</button>` : ''}</div></div>`;
+      <div class="chips">${b.ticket ? `<button class="chip pri" data-ticket="${b.ticket}">${ic('i-ticket')}${b.ticket === 'cooking' ? 'Meeting point' : b.ticket === 'ambassade' ? 'QR' : 'Tickets'}</button>` : ''}${map ? `<a class="chip" href="${mapUrl(map)}" target="_blank" rel="noopener">${ic('i-pin')}Map</a>` : ''}${phone ? `<a class="chip" href="tel:${phone}">${ic('i-phone')}Call</a>` : ''}${b.wa || (s && s.wa) ? `<a class="chip" href="https://wa.me/${b.wa || s.wa}" target="_blank" rel="noopener">${ic('i-phone')}WhatsApp</a>` : ''}${b.email ? `<a class="chip" href="mailto:${b.email}">${ic('i-mail')}Email</a>` : ''}${b.stay ? `<button class="chip" data-taxi="${b.stay}">${ic('i-car')}Driver card</button>` : ''}</div></div>`;
     }).join('') + `</div>`;
   });
   return h + `<p class="small mute" style="margin:22px 4px 0">Built from your trip spreadsheet and the Madrid Morocco folder in Gmail. Prices are left out on purpose.</p>`;
